@@ -104,3 +104,40 @@ jobs:
           ignore-unfixed: true
           vuln-type: os,library
           severity: CRITICAL,HIGH
+
+  update_cd_repo:
+    runs-on: ubuntu-latest
+    needs: trivy_image_scan
+    steps:
+      - name: Checkout CD repo
+        uses: actions/checkout@v4
+        with:
+          repository: Areeba-Urooj/GitOps-3_Tier-CD
+          ref: main
+          token: ${{ secrets.CD_REPO_TOKEN }}
+          path: cd
+
+      - name: Bump backend image in manifests
+        working-directory: cd
+        env:
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+        run: |
+          curl -sL https://github.com/mikefarah/yq/releases/download/v4.44.3/yq_linux_amd64 -o yq && sudo install yq /usr/local/bin/yq
+
+          # Update ONLY backend Deployment image
+          yq -i '
+            (. | select(.kind=="Deployment")
+               | .spec.template.spec.containers[]
+               | select(.name=="microblog-api" or .name=="backend")
+               | .image)
+            = "urooj275/microblog-api:" + strenv(IMAGE_TAG)
+          ' k8s-prod/backend.yaml
+
+      - name: Commit & push to CD repo
+        working-directory: cd
+        run: |
+          git config user.name "ci-bot"
+          git config user.email "ci-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "bump microblog-api image to ${IMAGE_TAG}" || echo "no changes"
+          git push
