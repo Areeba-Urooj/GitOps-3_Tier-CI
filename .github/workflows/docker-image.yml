@@ -10,7 +10,7 @@ permissions:
   contents: write   # required to push to CD repo with GITHUB_TOKEN or PAT
 
 env:
-  IMAGE_TAG: ${{ github.sha }}
+  IMAGE_TAG: ${{ github.sha }} 
 
 jobs:
   compile:
