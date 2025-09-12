@@ -42,7 +42,7 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
 
       - name: Gitleaks Scan
-        run: gitleaks detect --source ./api --exit-code 1
+        run: gitleaks detect --source . --exit-code 1
 
   trivy_fs_scan:
     runs-on: ubuntu-latest
