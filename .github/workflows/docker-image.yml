@@ -136,7 +136,7 @@ jobs:
           ' k8s-prod/backend.yml # Ensure the file path is correct
 
       - name: Commit & push to CD repo
-        working-directory: cd
+        working-directory: cd 
         run: |
           git config user.name "ci-bot"
           git config user.email "ci-bot@users.noreply.github.com"
