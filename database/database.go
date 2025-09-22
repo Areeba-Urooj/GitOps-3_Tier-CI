@@ -1,66 +1,37 @@
 package database
 
 import (
-	"fmt"
-	"log"
-	"os"
+    "fmt"
+    "log"
+    "os"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+    "gorm.io/driver/postgres"
+    "gorm.io/gorm"
 )
 
+// DB is the database connection object
 var DB *gorm.DB
 
+// Connect establishes a database connection
 func Connect() {
-	var err error
-	
-	// Database configuration
-	host := os.Getenv("DB_HOST")
-	if host == "" {
-		host = "localhost"
-	}
-	
-	port := os.Getenv("DB_PORT")
-	if port == "" {
-		port = "5432"
-	}
-	
-	user := os.Getenv("DB_USER")
-	if user == "" {
-		user = "postgres"
-	}
-	
-	password := os.Getenv("DB_PASSWORD")
-	if password == "" {
-		password = "postgres"
-	}
-	
-	dbname := os.Getenv("DB_NAME")
-	if dbname == "" {
-		dbname = "microblog"
-	}
+    var err error
 
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=UTC",
-		host, port, user, password, dbname)
+    // Read environment variables for database connection
+    dbHost := os.Getenv("DB_HOST")
+    dbUser := os.Getenv("DB_USER")
+    dbPassword := os.Getenv("DB_PASSWORD")
+    dbName := os.Getenv("DB_NAME")
+    dbPort := os.Getenv("DB_PORT")
 
-	// Set log level based on environment
-	logLevel := logger.Info
-	if os.Getenv("GIN_MODE") == "release" {
-		logLevel = logger.Error
-	}
+    // Construct the PostgreSQL DSN (Data Source Name)
+    dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai",
+        dbHost, dbUser, dbPassword, dbName, dbPort)
 
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logLevel),
-	})
+    // Connect to the database using GORM
+    DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+    if err != nil {
+        log.Fatalf("Failed to connect to database: %v", err)
+    }
 
-	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
-	}
-
-	log.Println("Database connected successfully")
-}
-
-func GetDB() *gorm.DB {
-	return DB
+    log.Println("Database connection established successfully")
 }
