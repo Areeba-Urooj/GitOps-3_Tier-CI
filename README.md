@@ -158,16 +158,6 @@ curl -X POST http://localhost:8080/api/v1/login \
   }'
 ```
 
-### Create a post (requires token)
-```bash
-curl -X POST http://localhost:8080/api/v1/posts \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -d '{
-    "title": "My First Post",
-    "content": "This is the content of my first blog post!"
-  }'
-```
 
 ### Get all posts
 ```bash

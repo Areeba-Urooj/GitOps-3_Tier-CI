@@ -143,5 +143,3 @@ jobs:
           git add -A
           git commit -m "bump microblog-api image to ${IMAGE_TAG}" || echo "No changes to commit"
           git push
-    
-
